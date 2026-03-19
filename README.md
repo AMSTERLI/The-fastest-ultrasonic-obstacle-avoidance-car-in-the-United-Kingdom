@@ -24,28 +24,43 @@ Agile obstacle avoiding smart car project with ultrasonic scanning, MPU6050 head
 ## Genius_design.ino Control Flow
 ```mermaid
 flowchart TD
-    A[Start setup] --> B[Init motors, ultrasonic, servo, MPU6050]
-    B --> C[Loop start]
-    C --> D[updateRadarTask()]
-    D --> E[Read scan distances at 45°,90°,135°]
-    E --> F{frontDist > SafeDistance?}
-    F -- Yes --> G[Compute left/right repulsion]
-    G --> H[Adjust yaw_target by ±0.5]
-    H --> I[moveStraightPID()]
-    I --> J[delay(10)]
+    %% 定义节点颜色和样式
+    classDef start fill:#d4edda,stroke:#28a745,stroke-width:2px,color:#000
+    classDef decision fill:#fff3cd,stroke:#ffc107,stroke-width:2px,color:#000
+    classDef danger fill:#f8d7da,stroke:#dc3545,stroke-width:2px,color:#000
+    classDef action fill:#cce5ff,stroke:#007bff,stroke-width:2px,color:#000
+
+    A([Start setup]):::start --> B[Init motors, ultrasonic, servo, MPU6050]:::start
+    B --> C([Loop start]):::start
+    
+    C --> D["updateRadarTask()"]:::action
+    D --> E["Read scan distances at 45°,90°,135°"]:::action
+    E --> F{"frontDist > SafeDistance?"}:::decision
+    
+    %% 前方安全分支
+    F -- Yes --> G[Compute left/right repulsion]:::action
+    G --> H["Adjust yaw_target by ±0.5"]:::action
+    H --> I["moveStraightPID()"]:::action
+    I --> J["delay(10)"]
     J --> C
-    F -- No --> K[stopCar()]
-    K --> L[turnAngle = evaluateBestDirection()]
-    L --> M{turnAngle == 999?}
-    M -- Yes --> N[moveBackward + rotateRelativePID(180)]
-    M -- No --> O{turnAngle != 0?}
-    O -- Yes --> P[rotateRelativePID(turnAngle)]
+    
+    %% 前方受阻分支
+    F -- No --> K["stopCar()"]:::danger
+    K --> L["turnAngle = evaluateBestDirection()"]:::action
+    L --> M{"turnAngle == 999?"}:::decision
+    
+    M -- Yes --> N["moveBackward + rotateRelativePID(180)"]:::danger
+    M -- No --> O{"turnAngle != 0?"}:::decision
+    
+    O -- Yes --> P["rotateRelativePID(turnAngle)"]:::action
     O -- No --> Q[skip turn]
-    P --> R[reset servo forward]
+    
+    P --> R[reset servo forward]:::action
     N --> R
     Q --> R
-    R --> S[delay(200)]
-    S --> T[delay(10)]
+    
+    R --> S["delay(200)"]
+    S --> T["delay(10)"]
     T --> C
 ```
 
