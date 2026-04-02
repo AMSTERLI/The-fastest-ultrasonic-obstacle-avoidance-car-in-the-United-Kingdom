@@ -83,7 +83,7 @@ Sensors:
 The video demonstrates the robot's autonomous navigation capabilities in a real-world test environment, showcasing:
 - Smooth straight-line motion with gyro stabilization
 - Real-time obstacle detection and emergency braking
-- Intelligent 360° scanning to find optimal escape routes
+- Intelligent 180° scanning to find optimal escape routes
 - Precise turning and recovery from obstacles
 - Continuous mission resumption after avoidance maneuvers
 
